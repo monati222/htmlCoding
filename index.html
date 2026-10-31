@@ -3179,5 +3179,91 @@ CodeStudioApp.prototype.copyVisibleAiPrompt=async function(){
             app.installBackupControls();
         });
     </script>
+<script>
+/* Responsive design lab — Digital Technology 2, unit 5, lesson 4. */
+(() => {
+  'use strict';
+  const KEY = 'code-studio-responsive-lab-v1';
+  const defaults = { mode:'menu', width:900, breakpoint:700, enabled:true, image:'100%', height:'auto', viewport:true };
+  let state = {...defaults}, done = {};
+  try { const saved=JSON.parse(localStorage.getItem(KEY)||'null'); if(saved && typeof saved==='object') { done=saved.done||{}; for(const k of Object.keys(defaults)) if(typeof saved.state?.[k]===typeof defaults[k]) state[k]=saved.state[k]; } } catch(_) {}
+  state.width=Math.min(1200,Math.max(320,state.width));
+  state.breakpoint=Math.min(1000,Math.max(400,state.breakpoint));
+  if(!['menu','images','cards','viewport'].includes(state.mode))state.mode='menu';
+  if(!['50%','100%','600px'].includes(state.image))state.image='100%';
+  if(!['auto','120px'].includes(state.height))state.height='auto';
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({state,done}));}catch(_){}};
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const art='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300"><rect width="600" height="300" rx="24" fill="#ede9fe"/><circle cx="300" cy="150" r="85" fill="#7c3aed"/><circle cx="300" cy="150" r="40" fill="#a7f3d0"/><path d="M30 240L130 80L230 240Z" fill="#f59e0b"/><rect x="420" y="80" width="120" height="160" rx="20" fill="#0d9488"/></svg>');
+  function css() {
+    const rule=state.mode==='images'?`.photos img { width: ${state.image}; height: ${state.height}; }`:state.mode==='cards'?'.cards { grid-template-columns: 1fr; }':'.menu li { display: block; }';
+    const base=state.mode==='images'?'.photos img { width: 240px; height: auto; }':state.mode==='cards'?'.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }':'.menu li { display: inline-block; }';
+    return base+'\n\n'+(state.enabled?`/* يطبق الشرط عند ${state.breakpoint} بكسل أو أقل، ويشمل المساواة. */\n@media screen and (max-width: ${state.breakpoint}px) {\n  ${rule}\n}`:'/* استعلام الوسائط معطّل: يبقى التنسيق الأساسي. */');
+  }
+  function doc(){
+    const meta=state.viewport?'<meta name="viewport" content="width=device-width, initial-scale=1.0">':'';
+    return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">'+meta+'<title>تجربة التصميم المستجيب</title><style> *{box-sizing:border-box}body{margin:0;padding:18px;font:16px/1.7 system-ui;background:#faf8ff;color:#312e81}h1{font-size:24px;margin:0 0 8px}p{margin:6px 0 18px}ul{padding:0;margin:0 0 18px;list-style:none}li{margin:4px;padding:8px 16px;background:#ddd6fe;border-radius:10px}.card{padding:16px;background:white;border:1px solid #c4b5fd;border-radius:14px;min-height:95px}.photos{border:2px dashed #a78bfa;padding:0}.photos img{display:block} .hint{font-size:13px;color:#64748b}'+css()+'</style></head><body><h1>نادي المبدعات ✨</h1><p>المحتوى نفسه، والتنسيق يتكيّف مع المساحة.</p>'+(state.mode==='images'?'<div class="photos"><img src="'+art+'" alt="أشكال هندسية: دائرة ومثلث ومستطيل لملاحظة تشوّه الصورة"></div><p class="hint">راقبي الدائرة: هل تبقى دائرية؟ الإطار المتقطع هو الحاوية.</p>':state.mode==='cards'?'<div class="cards"><article class="card">🎨<h2>التصميم</h2>أفكار تتحول إلى صفحات.</article><article class="card">💻<h2>البرمجة</h2>تجربة وتعديل وتعلّم.</article><article class="card">🌱<h2>الابتكار</h2>حلول تصنع فرقًا.</article></div>':'<ul class="menu"><li>الرئيسية</li><li>أنشطتنا</li><li>معرضنا</li></ul><p>غيّري العرض ثم لاحظي ترتيب القائمة والمسافات.</p>')+'</body></html>';
+  }
+  const tasks=[
+    {id:'boundary',title:'1. اختبري حد الشرط',text:'اختاري القائمة، فعّلي الاستعلام واضبطي الحد على 700. توقّعي الترتيب عند 700 و701 ثم جرّبيهما.',test:()=>state.mode==='menu'&&state.enabled&&state.breakpoint===700&&visits.has(700)&&visits.has(701),hint:'جرّبي عرض 700 ثم 701 مع تفعيل الاستعلام وحدّه 700.',why:'عند 700 ينطبق max-width؛ عند 701 لا ينطبق. المساواة مشمولة.'},
+    {id:'images',title:'2. صورة مرنة بلا تشوّه',text:'اختاري الصور، ثم عرض جوال 390. اجعلي الصورة تملأ الحاوية وتحافظ على أبعادها.',test:()=>state.mode==='images'&&state.enabled&&state.width===390&&state.width<=state.breakpoint&&state.image==='100%'&&state.height==='auto',hint:'اختاري الصور وعرض 390، وفعّلي الشرط، ثم width:100% وheight:auto.',why:'100% نسبة إلى عرض الحاوية، وauto يحافظ على تناسب الارتفاع مع العرض.'},
+    {id:'cards',title:'3. بطاقات مناسبة للجوال',text:'اختاري البطاقات وعرض 390، ثم اجعلي البطاقات في عمود واحد باستخدام الشرط.',test:()=>state.mode==='cards'&&state.width===390&&state.enabled&&state.width<=state.breakpoint,hint:'اختاري البطاقات، وعرض 390، وفعّلي استعلام الوسائط.',why:'grid-template-columns:1fr يجعل الشبكة عمودًا واحدًا عند تحقق الشرط.'}
+  ];
+  const visits=new Set();
+  let root=null, observer=null;
+  function render(){
+    const box=document.createElement('section'); box.id='responsive-design-lab'; box.dir='rtl';
+    box.innerHTML=`<style>
+#responsive-design-lab{background:white;border:1px solid #ddd6fe;border-radius:24px;padding:24px;min-width:0;color:#1e293b}#responsive-design-lab *{box-sizing:border-box}#responsive-design-lab h3{font-size:24px;font-weight:800;margin:8px 0}#responsive-design-lab h4{font-weight:700;margin:0 0 10px}#responsive-design-lab p{line-height:1.8}#responsive-design-lab button,#responsive-design-lab select{font:inherit;border:1px solid #ddd6fe;border-radius:10px;padding:9px 12px;background:#f5f3ff;color:#4c1d95;cursor:pointer}#responsive-design-lab button:focus-visible,#responsive-design-lab select:focus-visible,#responsive-design-lab input:focus-visible{outline:3px solid #0d9488;outline-offset:3px}#responsive-design-lab button[aria-pressed=true]{background:#6d28d9;color:white}#responsive-design-lab .rl-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}#responsive-design-lab .rl-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;margin-top:18px}#responsive-design-lab .rl-panel{background:#f8fafc;padding:16px;border-radius:16px;min-width:0}#responsive-design-lab label{display:block;margin:12px 0;font-size:14px}#responsive-design-lab input[type=range]{display:block;width:100%;accent-color:#7c3aed;margin-top:10px}#responsive-design-lab input[type=checkbox]{accent-color:#7c3aed}#responsive-design-lab .rl-note{font-size:13px;color:#475569}#responsive-design-lab .rl-status{padding:12px;border-radius:12px;background:#ecfdf5;color:#065f46;line-height:1.8;margin:10px 0}#responsive-design-lab .rl-stage{direction:ltr;overflow:hidden;background:repeating-linear-gradient(90deg,#eef2ff 0,#eef2ff 1px,transparent 1px,transparent 20px);border:1px solid #cbd5e1;border-radius:14px;position:relative}#responsive-design-lab iframe{display:block;border:0;transform-origin:top left;max-width:none;background:white}#responsive-design-lab pre{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:12px;font:13px/1.8 monospace;white-space:pre-wrap;overflow-wrap:anywhere;direction:ltr;text-align:left;margin:12px 0}#responsive-design-lab .rl-tasks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}#responsive-design-lab .rl-task{border:1px solid #ddd6fe;border-radius:14px;padding:16px;font-size:14px}#responsive-design-lab .rl-feedback{min-height:30px;margin-top:8px}#responsive-design-lab [hidden]{display:none!important}@media(max-width:850px){#responsive-design-lab .rl-layout,#responsive-design-lab .rl-tasks{grid-template-columns:1fr}#responsive-design-lab{padding:16px}}
+</style>
+<p class="rl-note">التقنية الرقمية 2 · الوحدة الخامسة · الدرس الرابع · كتاب 1448 ص 254–268</p>
+<h3>3. مختبر التصميم المستجيب 📱 ↔ 💻</h3>
+<p>توقّعي النتيجة، غيّري خيارًا واحدًا، ثم قارني المعاينة والكود. الهدف: فهم متى يعمل الأمر وما الذي يغيّره.</p>
+<div class="rl-row" role="group" aria-label="نوع تجربة الاستجابة">${[['menu','القائمة'],['images','الصور'],['cards','البطاقات'],['viewport','إطار العرض viewport']].map(([v,t])=>`<button type="button" data-mode="${v}" aria-pressed="${state.mode===v}">${t}</button>`).join('')}</div>
+<div class="rl-layout"><div class="rl-panel">
+<h4>تحكّمي في التجربة</h4>
+<label>عرض الجهاز الافتراضي: <strong data-out="width"></strong> بكسل<input aria-label="عرض الجهاز الافتراضي" data-setting="width" type="range" min="320" max="1200" step="1" value="${state.width}"></label>
+<div class="rl-row">${[390,700,701,900,1100].map(n=>`<button type="button" data-width="${n}" aria-label="عرض ${n} بكسل">${n}</button>`).join('')}</div>
+<label><input type="checkbox" data-setting="enabled" ${state.enabled?'checked':''}> تفعيل استعلام الوسائط @media</label>
+<label>حد الشرط max-width: <strong data-out="breakpoint"></strong> بكسل<input aria-label="حد استعلام الوسائط" data-setting="breakpoint" type="range" min="400" max="1000" step="1" value="${state.breakpoint}"></label>
+<div data-images ${state.mode==='images'?'':'hidden'}><label>عرض الصورة عند تحقق الشرط<select data-setting="image" aria-label="عرض الصورة">${['50%','100%','600px'].map(v=>`<option ${state.image===v?'selected':''}>${v}</option>`).join('')}</select></label><label>ارتفاع الصورة<select data-setting="height" aria-label="ارتفاع الصورة"><option value="auto" ${state.height==='auto'?'selected':''}>auto — يحافظ على التناسب</option><option value="120px" ${state.height==='120px'?'selected':''}>120px — ارتفاع ثابت</option></select></label></div>
+<div data-viewport ${state.mode==='viewport'?'':'hidden'}><label><input type="checkbox" data-setting="viewport" ${state.viewport?'checked':''}> إضافة وسم viewport</label><p class="rl-note">محاكاة تعليمية: بدون الوسم نفترض إطار تخطيط 980 بكسل يُصغّر إلى الجهاز. القيمة الفعلية تختلف بين المتصفحات. إضافة الوسم وحدها لا تعيد ترتيب العناصر.</p></div>
+<button type="button" data-reset>إعادة خيارات التجربة</button>
+</div><div style="min-width:0"><h4>المعاينة الحية</h4><p data-status class="rl-status" role="status" aria-live="polite"></p><p data-scale class="rl-note"></p><div class="rl-stage"><iframe title="معاينة التصميم المستجيب" sandbox="allow-same-origin" height="460"></iframe></div><p data-measure class="rl-note"></p></div></div>
+<details open><summary style="cursor:pointer;font-weight:700;margin-top:20px">الكود الذي يصنع النتيجة</summary><pre data-code tabindex="0" aria-label="كود تجربة الاستجابة"></pre><div class="rl-row"><button type="button" data-copy>نسخ الكود</button><button type="button" data-download>تنزيل التجربة HTML</button><span data-copy-status role="status"></span></div></details>
+<details><summary style="cursor:pointer;font-weight:700">كيف أقرأ هذه الأوامر؟</summary><p><b>max-width</b>: العرض يساوي الحد أو أصغر منه. <b>min-width</b>: العرض يساوي الحد أو أكبر منه. <b>50% و100%</b>: نسبة من عرض الحاوية، لا من حجم الصورة الأصلية. <b>height:auto</b>: ارتفاع متناسب. <b>inline-block</b>: العناصر بجانب بعضها ما دامت المساحة تكفي. <b>block</b>: كل عنصر يبدأ سطرًا جديدًا. محاكاة الأجهزة تختبر التصميم ولا تكتب CSS بدلًا منك.</p><p>في مثال الكتاب، شرط 900 وشرط 700 يتحققان معًا عند 700 أو أقل. عندما يتساوى المحدد، تتغلب قيمة العرض في القاعدة المكتوبة لاحقًا. لذلك تأتي قاعدة 100% بعد قاعدة 50%.</p></details>
+<h4 style="margin-top:24px">تحديات: توقّعي ثم جرّبي</h4><p class="rl-note">يحفظ هذا المختبر التحديات المكتملة على هذا المتصفح. إعداداتك مستقلة عن درجات الأنشطة ومسودات المشاريع.</p><div class="rl-tasks">${tasks.map(t=>`<article class="rl-task"><h4>${t.title}</h4><p>${t.text}</p><button type="button" data-check="${t.id}">تحقّق من التجربة</button><p class="rl-feedback" data-feedback="${t.id}" role="status">${done[t.id]?'✓ أنجزتِ هذا التحدي سابقًا.':''}</p></article>`).join('')}</div>`;
+    root=box;
+    box.addEventListener('click',async e=>{
+      const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.mode){state.mode=b.dataset.mode;update();}
+      if(b.dataset.width){state.width=+b.dataset.width;update();}
+      if(b.hasAttribute('data-reset')){state={...defaults,mode:state.mode};visits.clear();update();}
+      if(b.dataset.check){const task=tasks.find(t=>t.id===b.dataset.check),ok=task.test();if(ok){done[task.id]=true;save();}box.querySelector(`[data-feedback="${task.id}"]`).textContent=ok?'✓ أحسنتِ! '+task.why:'جرّبي مرة أخرى: '+task.hint;}
+      if(b.hasAttribute('data-copy')){const code=codeText();try{await navigator.clipboard.writeText(code);box.querySelector('[data-copy-status]').textContent='تم نسخ الكود.';}catch(_){const range=document.createRange();range.selectNodeContents(box.querySelector('[data-code]'));const sel=getSelection();sel.removeAllRanges();sel.addRange(range);box.querySelector('[data-copy-status]').textContent='الكود محدد؛ اضغطي Ctrl+C أو اختاري نسخ.';}}
+      if(b.hasAttribute('data-download')){const url=URL.createObjectURL(new Blob([doc()],{type:'text/html;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='responsive-experiment.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+    });
+    box.addEventListener('input',e=>{const k=e.target.dataset.setting;if(!k)return;state[k]=e.target.type==='checkbox'?e.target.checked:e.target.type==='range'?+e.target.value:e.target.value;update();});
+    const frame=box.querySelector('iframe');frame.addEventListener('load',()=>{if(!box.isConnected)return;try{const d=frame.contentDocument,img=d.querySelector('img');const detail=()=>{box.querySelector('[data-measure]').textContent=img?`عرض حاوية الصورة: ${Math.round(d.querySelector('.photos').clientWidth)}px · أبعاد الصورة المعروضة: ${Math.round(img.getBoundingClientRect().width)} × ${Math.round(img.getBoundingClientRect().height)}px`:`عرض إطار CSS الحقيقي داخل التجربة: ${frame.contentWindow.innerWidth}px. قد تلتف العناصر طبيعيًا إذا ضاقت المساحة حتى مع تعطيل الشرط.`;};if(img&&!img.complete)img.addEventListener('load',detail,{once:true});detail();}catch(_){}});
+    requestAnimationFrame(()=>{if(!box.isConnected)return;if(observer)observer.disconnect();observer=new ResizeObserver(()=>fit());observer.observe(box.querySelector('.rl-stage'));update();});
+    return box;
+  }
+  function codeText(){return (state.mode!=='viewport'||state.viewport?'<meta name="viewport" content="width=device-width, initial-scale=1.0">':'<!-- وسم viewport محذوف في هذه التجربة -->')+'\n\n<style>\n'+css()+'\n</style>';}
+  function fit(){if(!root?.isConnected)return;const stage=root.querySelector('.rl-stage'),frame=root.querySelector('iframe');const layout=state.mode==='viewport'&&!state.viewport?980:state.width;const scale=Math.min(1,stage.clientWidth/state.width)*state.width/layout;frame.style.width=layout+'px';frame.style.height='460px';frame.style.transform=`scale(${scale})`;stage.style.height=Math.ceil(460*scale)+2+'px';root.querySelector('[data-scale]').textContent=`عرض الجهاز: ${state.width}px · عرض التخطيط: ${layout}px. تُصغّر المعاينة بصريًا عند الحاجة لتتسع هنا؛ لا يغيّر التصغير شرط CSS.`;}
+  function update(){if(!root)return;
+    if(state.mode==='menu'&&state.enabled&&state.breakpoint===700)visits.add(state.width);
+    root.querySelectorAll('[data-setting]').forEach(el=>{const v=state[el.dataset.setting];if(el.type==='checkbox')el.checked=v;else el.value=v;});
+    root.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===state.mode)));
+    root.querySelector('[data-images]').hidden=state.mode!=='images';root.querySelector('[data-viewport]').hidden=state.mode!=='viewport';
+    root.querySelector('[data-out="width"]').textContent=state.width;root.querySelector('[data-out="breakpoint"]').textContent=state.breakpoint;
+    const layout=state.mode==='viewport'&&!state.viewport?980:state.width,active=state.enabled&&layout<=state.breakpoint;
+    root.querySelector('[data-status]').textContent=!state.enabled?'الاستعلام معطّل؛ المعاينة تستخدم التنسيق الأساسي.':active?`✓ الشرط متحقق: ${layout} ≤ ${state.breakpoint}. ${state.mode==='images'?'تُطبّق أبعاد الصورة المختارة.':state.mode==='cards'?'البطاقات في عمود واحد.':'كل عنصر في القائمة يبدأ سطرًا جديدًا.'}`:`الشرط غير متحقق: ${layout} > ${state.breakpoint}. يظهر التنسيق الأساسي.`;
+    root.querySelector('[data-code]').textContent=codeText();fit();root.querySelector('iframe').srcdoc=doc();save();
+  }
+  const original=CodeStudioApp.prototype.renderLabsView;
+  CodeStudioApp.prototype.renderLabsView=function(){const view=original.call(this);view.appendChild(render());return view;};
+})();
+
+</script>
 </body>
 </html>
